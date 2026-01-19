@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Japanese Express - Bento Order</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍱</text></svg>">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #fffbf5 0%, #fff5eb 50%, #fff0e6 100%);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bg-decor {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 159, 67, 0.1) 0%, transparent 50%);
+    }
+
+    header {
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      font-size: 30px;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .progress-bar {
+      width: 100px;
+      height: 5px;
+      background: rgba(0,0,0,0.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6b6b, #ff9f43);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    .step-indicator {
+      font-size: 13px;
+      color: #888;
+      font-weight: 500;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 28px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .question-container {
+      max-width: 640px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .question-container.animating {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-badge {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.1);
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    .step-title {
+      font-size: 32px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .step-subtitle {
+      font-size: 15px;
+      color: #888;
+      margin-bottom: 32px;
+    }
+
+    .text-input {
+      width: 100%;
+      font-size: 24px;
+      padding: 16px 0;
+      border: none;
+      border-bottom: 2px solid #e0e0e0;
+      background: transparent;
+      outline: none;
+      color: #1a1a1a;
+      transition: border-color 0.3s ease;
+    }
+
+    .text-input:focus {
+      border-color: #ff6b6b;
+    }
+
+    .text-input::placeholder {
+      color: #ccc;
+    }
+
+    /* Bento Grid */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .bento-card {
+      background: rgba(255,255,255,0.9);
+      border-radius: 16px;
+      padding: 18px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      position: relative;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      transition: all 0.2s ease;
+    }
+
+    .bento-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .bento-card.selected {
+      border-color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.08);
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, #ff6b6b, #ff9f43);
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .bento-emoji {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .bento-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 2px;
+    }
+
+    .bento-name-jp {
+      font-size: 11px;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+
+    .bento-desc {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .bento-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .bento-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ff6b6b;
+    }
+
+    .bento-allergens {
+      display: flex;
+      gap: 4px;
+    }
+
+    .allergen-mini-tag {
+      font-size: 8px;
+      background: #f0f0f0;
+      color: #888;
+      padding: 2px 6px;
+      border-radius: 8px;
+      text-transform: uppercase;
+    }
+
+    .checkmark {
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #ff6b6b, #ff9f43);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    /* Allergen Grid */
+    .allergen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .allergen-card {
+      background: rgba(255,255,255,0.9);
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      transition: all 0.2s ease;
+    }
+
+    .allergen-card:hover {
+      transform: translateY(-1px);
+    }
+
+    .allergen-card.selected {
+      border-color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.08);
+    }
+
+    .allergen-icon {
+      font-size: 22px;
+    }
+
+    .allergen-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .allergen-check {
+      position: absolute;
+      right: 10px;
+      color: #ff6b6b;
+      font-weight: bold;
+    }
+
+    .allergen-warning {
+      margin-top: 24px;
+      padding: 14px 18px;
+      background: rgba(255, 159, 67, 0.1);
+      border-radius: 12px;
+      font-size: 14px;
+      color: #b45309;
+    }
+
+    /* Textarea */
+    .text-area {
+      width: 100%;
+      font-size: 16px;
+      padding: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.8);
+      outline: none;
+      color: #1a1a1a;
+      resize: vertical;
+      min-height: 100px;
+      font-family: inherit;
+      transition: border-color 0.3s ease;
+    }
+
+    .text-area:focus {
+      border-color: #ff6b6b;
+    }
+
+    .summary-card {
+      margin-top: 28px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 16px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+
+    .summary-emoji {
+      font-size: 44px;
+    }
+
+    .summary-name {
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .summary-meta {
+      font-size: 14px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    /* Footer */
+    footer {
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: 10px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-back {
+      background: transparent;
+      color: #888;
+    }
+
+    .btn-back:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .btn-next {
+      background: linear-gradient(135deg, #1a1a1a, #333);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .btn-next:disabled {
+      background: #e0e0e0;
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .btn-shortcut {
+      font-size: 10px;
+      opacity: 0.7;
+      font-weight: 400;
+    }
+
+    .btn-submit {
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #ff6b6b, #ff9f43);
+      color: white;
+      box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    }
+
+    .btn-submit:disabled {
+      background: #ccc;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* Success Screen */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 60px 24px;
+      max-width: 480px;
+      margin: auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    .success-screen.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .success-icon {
+      font-size: 72px;
+      margin-bottom: 24px;
+    }
+
+    .success-title {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+    }
+
+    .success-text {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .order-summary {
+      background: rgba(255,255,255,0.9);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: left;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    .summary-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 15px;
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-label {
+      color: #888;
+    }
+
+    .summary-value {
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .btn-restart {
+      background: linear-gradient(135deg, #1a1a1a, #333);
+      color: white;
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.9);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f0f0f0;
+      border-top-color: #ff6b6b;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 16px;
+      color: #666;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .step-title {
+        font-size: 24px;
+      }
+      .text-input {
+        font-size: 18px;
+      }
+      .bento-grid {
+        grid-template-columns: 1fr;
+      }
+      .allergen-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-decor"></div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Submitting your order...</div>
+  </div>
+
+  <!-- Main Survey -->
+  <div id="surveyContainer">
+    <header>
+      <div class="logo">
+        <span class="logo-icon">🍱</span>
+        <span class="logo-text">Japanese Express</span>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <span class="step-indicator" id="stepIndicator">1 / 6</span>
+      </div>
+    </header>
+
+    <main>
+      <div class="question-container" id="questionContainer">
+        
+        <!-- Step 1: Teacher Name -->
+        <div class="step active" data-step="0">
+          <span class="step-badge">1 →</span>
+          <h2 class="step-title">What is your teacher's name?</h2>
+          <p class="step-subtitle">先生のお名前を入力してください</p>
+          <input type="text" class="text-input" id="teacherName" placeholder="Type teacher's full name..." autofocus>
+        </div>
+
+        <!-- Step 2: Room Number -->
+        <div class="step" data-step="1">
+          <span class="step-badge">2 →</span>
+          <h2 class="step-title">What is your room number?</h2>
+          <p class="step-subtitle">教室番号を入力してください</p>
+          <input type="text" class="text-input" id="roomNumber" placeholder="e.g., Room 204, Gym, Cafeteria...">
+        </div>
+
+        <!-- Step 3: Student ID -->
+        <div class="step" data-step="2">
+          <span class="step-badge">3 →</span>
+          <h2 class="step-title">Student Last Name or ID</h2>
+          <p class="step-subtitle">生徒の名前またはIDを入力してください</p>
+          <input type="text" class="text-input" id="studentId" placeholder="Enter last name or student ID...">
+        </div>
+
+        <!-- Step 4: Bento Selection -->
+        <div class="step" data-step="3">
+          <span class="step-badge">4 →</span>
+          <h2 class="step-title">Choose your bento box</h2>
+          <p class="step-subtitle">お弁当を選んでください</p>
+          <div class="bento-grid" id="bentoGrid"></div>
+        </div>
+
+        <!-- Step 5: Allergens -->
+        <div class="step" data-step="4">
+          <span class="step-badge">5 →</span>
+          <h2 class="step-title">Any food allergies?</h2>
+          <p class="step-subtitle">食物アレルギーはありますか？ Select all that apply.</p>
+          <div class="allergen-grid" id="allergenGrid"></div>
+          <div class="allergen-warning" id="allergenWarning" style="display: none;">
+            ⚠️ We'll ensure your bento avoids these ingredients
+          </div>
+        </div>
+
+        <!-- Step 6: Special Instructions -->
+        <div class="step" data-step="5">
+          <span class="step-badge">6 →</span>
+          <h2 class="step-title">Any special instructions?</h2>
+          <p class="step-subtitle">その他のご要望があればお書きください (Optional)</p>
+          <textarea class="text-area" id="specialInstructions" placeholder="e.g., Extra rice, no spicy, cut in smaller pieces..."></textarea>
+          <div class="summary-card" id="orderPreview"></div>
+        </div>
+
+      </div>
+    </main>
+
+    <footer>
+      <button class="btn btn-back" id="btnBack" disabled>↑ Back</button>
+      <button class="btn btn-next" id="btnNext">
+        <span>OK ✓</span>
+        <span class="btn-shortcut">press Enter ↵</span>
+      </button>
+      <button class="btn btn-submit" id="btnSubmit" style="display: none;">Submit Order 🍱</button>
+    </footer>
+  </div>
+
+  <!-- Success Screen -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">🎉</div>
+    <h1 class="success-title">Order Submitted!</h1>
+    <p class="success-text">Thank you for your bento order. Your teacher will receive confirmation shortly.</p>
+    <div class="order-summary" id="orderSummary"></div>
+    <button class="btn btn-restart" id="btnRestart">Place Another Order</button>
+  </div>
+
+  <script>
+    // ============================================
+    // CONFIGURATION - UPDATE THIS URL
+    // ============================================
+    const GOOGLE_SCRIPT_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgShXwXQkLsc37qQic8iNs9KyGyfRXLMkf_b5Okq3j8-relH8d9BbdzYbHAnxI6oyRZK-sp-95ffRH6t60hFV-0fO0pxKjm9XNR3BMq9wpb564KGLR2fJlG5u_yAbQ1kCuJOS-f21pIDjHQA73UQbL_IeMQyoIdGvQNQAhIXQ0JtUixRy7sBqlpx-e62DGhjkO9frO4aD_3dxavGd9gQuHCssFIWcfAA7RyB9K8muFNm1RxGTZkpqzK6k3ShzNkhlFHXfk05DzjLVjSN5DY7kAi2OoUuWtxpbIJMxvS&lib=Mla1lx5RRneBcS2j0qRnBHe9A-0XWXm4l';
+    // ============================================
+
+    // Data
+    const bentoMenus = [
+      { id: 'teriyaki', name: 'Teriyaki Chicken Bento', nameJp: '照り焼きチキン弁当', price: 12.99, description: 'Grilled chicken with sweet teriyaki glaze, steamed rice, edamame, and pickled vegetables', image: '🍗', popular: true, allergens: ['soy', 'sesame', 'wheat'] },
+      { id: 'salmon', name: 'Grilled Salmon Bento', nameJp: '焼き鮭弁当', price: 14.99, description: 'Norwegian salmon fillet with miso glaze, jasmine rice, seaweed salad, and tamagoyaki', image: '🍣', popular: true, allergens: ['fish', 'soy', 'egg', 'sesame'] },
+      { id: 'katsu', name: 'Chicken Katsu Bento', nameJp: 'チキンカツ弁当', price: 13.49, description: 'Crispy panko-breaded chicken cutlet with tonkatsu sauce, rice, and coleslaw', image: '🍱', popular: false, allergens: ['wheat', 'egg', 'soy'] },
+      { id: 'veggie', name: 'Vegetable Tempura Bento', nameJp: '野菜天ぷら弁当', price: 11.99, description: 'Assorted seasonal vegetables in light tempura batter with tentsuyu dipping sauce', image: '🥬', popular: false, allergens: ['wheat', 'soy'] },
+      { id: 'gyudon', name: 'Gyudon Beef Bowl', nameJp: '牛丼', price: 13.99, description: 'Thinly sliced beef simmered with onions in sweet soy broth over fluffy rice', image: '🥩', popular: true, allergens: ['soy', 'wheat'] },
+      { id: 'tofu', name: 'Tofu Teriyaki Bento', nameJp: '豆腐照り焼き弁当', price: 10.99, description: 'Crispy tofu with teriyaki glaze, brown rice, steamed broccoli, and pickles', image: '🫘', popular: false, allergens: ['soy', 'sesame', 'wheat'] }
+    ];
+
+    const allergensList = [
+      { id: 'wheat', name: 'Wheat/Gluten', icon: '🌾' },
+      { id: 'soy', name: 'Soy', icon: '🫘' },
+      { id: 'egg', name: 'Eggs', icon: '🥚' },
+      { id: 'fish', name: 'Fish', icon: '🐟' },
+      { id: 'shellfish', name: 'Shellfish', icon: '🦐' },
+      { id: 'sesame', name: 'Sesame', icon: '⚪' },
+      { id: 'peanuts', name: 'Peanuts', icon: '🥜' },
+      { id: 'treenuts', name: 'Tree Nuts', icon: '🌰' },
+      { id: 'dairy', name: 'Dairy', icon: '🥛' },
+      { id: 'none', name: 'No Allergies', icon: '✓' }
+    ];
+
+    // State
+    let currentStep = 0;
+    const totalSteps = 6;
+    let formData = {
+      teacherName: '',
+      roomNumber: '',
+      studentId: '',
+      selectedBento: null,
+      allergens: [],
+      specialInstructions: ''
+    };
+
+    // DOM Elements
+    const progressFill = document.getElementById('progressFill');
+    const stepIndicator = document.getElementById('stepIndicator');
+    const questionContainer = document.getElementById('questionContainer');
+    const btnBack = document.getElementById('btnBack');
+    const btnNext = document.getElementById('btnNext');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const surveyContainer = document.getElementById('surveyContainer');
+    const successScreen = document.getElementById('successScreen');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    // Initialize
+    function init() {
+      renderBentoGrid();
+      renderAllergenGrid();
+      updateProgress();
+      setupEventListeners();
+    }
+
+    function renderBentoGrid() {
+      const grid = document.getElementById('bentoGrid');
+      grid.innerHTML = bentoMenus.map(bento => `
+        <div class="bento-card" data-id="${bento.id}">
+          ${bento.popular ? '<span class="popular-badge">Popular</span>' : ''}
+          <div class="bento-emoji">${bento.image}</div>
+          <div class="bento-name">${bento.name}</div>
+          <div class="bento-name-jp">${bento.nameJp}</div>
+          <div class="bento-desc">${bento.description}</div>
+          <div class="bento-footer">
+            <span class="bento-price">$${bento.price.toFixed(2)}</span>
+            <div class="bento-allergens">
+              ${bento.allergens.slice(0, 2).map(a => `<span class="allergen-mini-tag">${a}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      grid.querySelectorAll('.bento-card').forEach(card => {
+        card.addEventListener('click', () => selectBento(card.dataset.id));
+      });
+    }
+
+    function renderAllergenGrid() {
+      const grid = document.getElementById('allergenGrid');
+      grid.innerHTML = allergensList.map(allergen => `
+        <div class="allergen-card" data-id="${allergen.id}">
+          <span class="allergen-icon">${allergen.icon}</span>
+          <span class="allergen-name">${allergen.name}</span>
+        </div>
+      `).join('');
+
+      grid.querySelectorAll('.allergen-card').forEach(card => {
+        card.addEventListener('click', () => toggleAllergen(card.dataset.id));
+      });
+    }
+
+    function selectBento(id) {
+      formData.selectedBento = id;
+      document.querySelectorAll('.bento-card').forEach(card => {
+        card.classList.remove('selected');
+        card.querySelector('.checkmark')?.remove();
+      });
+      const selected = document.querySelector(`.bento-card[data-id="${id}"]`);
+      selected.classList.add('selected');
+      selected.innerHTML += '<div class="checkmark">✓</div>';
+      updateButtons();
+    }
+
+    function toggleAllergen(id) {
+      if (id === 'none') {
+        formData.allergens = ['none'];
+      } else {
+        if (formData.allergens.includes(id)) {
+          formData.allergens = formData.allergens.filter(a => a !== id);
+        } else {
+          formData.allergens = [...formData.allergens.filter(a => a !== 'none'), id];
+        }
+      }
+      updateAllergenUI();
+      updateButtons();
+    }
+
+    function updateAllergenUI() {
+      document.querySelectorAll('.allergen-card').forEach(card => {
+        const id = card.dataset.id;
+        card.classList.toggle('selected', formData.allergens.includes(id));
+        card.querySelector('.allergen-check')?.remove();
+        if (formData.allergens.includes(id)) {
+          card.innerHTML += '<span class="allergen-check">✓</span>';
+        }
+      });
+      const warning = document.getElementById('allergenWarning');
+      warning.style.display = formData.allergens.length > 0 && !formData.allergens.includes('none') ? 'block' : 'none';
+    }
+
+    function setupEventListeners() {
+      btnBack.addEventListener('click', goBack);
+      btnNext.addEventListener('click', goNext);
+      btnSubmit.addEventListener('click', submitForm);
+      document.getElementById('btnRestart').addEventListener('click', restart);
+
+      // Input listeners
+      document.getElementById('teacherName').addEventListener('input', (e) => {
+        formData.teacherName = e.target.value;
+        updateButtons();
+      });
+      document.getElementById('roomNumber').addEventListener('input', (e) => {
+        formData.roomNumber = e.target.value;
+        updateButtons();
+      });
+      document.getElementById('studentId').addEventListener('input', (e) => {
+        formData.studentId = e.target.value;
+        updateButtons();
+      });
+      document.getElementById('specialInstructions').addEventListener('input', (e) => {
+        formData.specialInstructions = e.target.value;
+      });
+
+      // Enter key navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && canProceed()) {
+          e.preventDefault();
+          if (currentStep < totalSteps - 1) {
+            goNext();
+          } else {
+            submitForm();
+          }
+        }
+      });
+    }
+
+    function canProceed() {
+      switch (currentStep) {
+        case 0: return formData.teacherName.trim().length > 0;
+        case 1: return formData.roomNumber.trim().length > 0;
+        case 2: return formData.studentId.trim().length > 0;
+        case 3: return formData.selectedBento !== null;
+        case 4: return formData.allergens.length > 0;
+        case 5: return true;
+        default: return false;
+      }
+    }
+
+    function updateButtons() {
+      btnBack.disabled = currentStep === 0;
+      btnNext.disabled = !canProceed();
+      
+      if (currentStep === totalSteps - 1) {
+        btnNext.style.display = 'none';
+        btnSubmit.style.display = 'block';
+      } else {
+        btnNext.style.display = 'flex';
+        btnSubmit.style.display = 'none';
+      }
+    }
+
+    function updateProgress() {
+      const progress = ((currentStep + 1) / totalSteps) * 100;
+      progressFill.style.width = `${progress}%`;
+      stepIndicator.textContent = `${currentStep + 1} / ${totalSteps}`;
+    }
+
+    function showStep(step) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
+      
+      // Focus input if present
+      const input = document.querySelector(`.step[data-step="${step}"] .text-input`);
+      if (input) setTimeout(() => input.focus(), 100);
+
+      // Update order preview on last step
+      if (step === 5) {
+        updateOrderPreview();
+      }
+    }
+
+    function updateOrderPreview() {
+      const bento = bentoMenus.find(b => b.id === formData.selectedBento);
+      document.getElementById('orderPreview').innerHTML = `
+        <span class="summary-emoji">${bento?.image || '🍱'}</span>
+        <div>
+          <div class="summary-name">${bento?.name || 'No bento selected'}</div>
+          <div class="summary-meta">For ${formData.studentId} • Room ${formData.roomNumber}</div>
+        </div>
+      `;
+    }
+
+    function goNext() {
+      if (currentStep < totalSteps - 1 && canProceed()) {
+        questionContainer.classList.add('animating');
+        setTimeout(() => {
+          currentStep++;
+          showStep(currentStep);
+          updateProgress();
+          updateButtons();
+          questionContainer.classList.remove('animating');
+        }, 300);
+      }
+    }
+
+    function goBack() {
+      if (currentStep > 0) {
+        questionContainer.classList.add('animating');
+        setTimeout(() => {
+          currentStep--;
+          showStep(currentStep);
+          updateProgress();
+          updateButtons();
+          questionContainer.classList.remove('animating');
+        }, 300);
+      }
+    }
+
+    async function submitForm() {
+      loadingOverlay.classList.add('active');
+
+      const bento = bentoMenus.find(b => b.id === formData.selectedBento);
+      const submission = {
+        timestamp: new Date().toISOString(),
+        teacherName: formData.teacherName,
+        roomNumber: formData.roomNumber,
+        studentId: formData.studentId,
+        bentoName: bento?.name || '',
+        bentoPrice: bento?.price || 0,
+        allergens: formData.allergens.join(', '),
+        specialInstructions: formData.specialInstructions
+      };
+
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submission)
+        });
+
+        showSuccess(submission);
+      } catch (error) {
+        console.error('Submission error:', error);
+        alert('There was an error submitting your order. Please try again.');
+      } finally {
+        loadingOverlay.classList.remove('active');
+      }
+    }
+
+    function showSuccess(data) {
+      surveyContainer.style.display = 'none';
+      successScreen.classList.add('active');
+
+      document.getElementById('orderSummary').innerHTML = `
+        <h3 class="summary-title">Order Summary</h3>
+        <div class="summary-row">
+          <span class="summary-label">Teacher</span>
+          <span class="summary-value">${data.teacherName}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Room</span>
+          <span class="summary-value">${data.roomNumber}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Student</span>
+          <span class="summary-value">${data.studentId}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Bento</span>
+          <span class="summary-value">${data.bentoName}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Price</span>
+          <span class="summary-value">$${data.bentoPrice.toFixed(2)}</span>
+        </div>
+      `;
+    }
+
+    function restart() {
+      currentStep = 0;
+      formData = {
+        teacherName: '',
+        roomNumber: '',
+        studentId: '',
+        selectedBento: null,
+        allergens: [],
+        specialInstructions: ''
+      };
+
+      // Reset inputs
+      document.getElementById('teacherName').value = '';
+      document.getElementById('roomNumber').value = '';
+      document.getElementById('studentId').value = '';
+      document.getElementById('specialInstructions').value = '';
+
+      // Reset bento selection
+      document.querySelectorAll('.bento-card').forEach(card => {
+        card.classList.remove('selected');
+        card.querySelector('.checkmark')?.remove();
+      });
+
+      // Reset allergens
+      document.querySelectorAll('.allergen-card').forEach(card => {
+        card.classList.remove('selected');
+        card.querySelector('.allergen-check')?.remove();
+      });
+      document.getElementById('allergenWarning').style.display = 'none';
+
+      // Show survey
+      successScreen.classList.remove('active');
+      surveyContainer.style.display = 'block';
+      showStep(0);
+      updateProgress();
+      updateButtons();
+    }
+
+    // Start
+    init();
+  </script>
+</body>
+</html>
