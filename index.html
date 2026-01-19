@@ -91,6 +91,14 @@
       text-align: center;
     }
 
+    .splash-school {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
     .splash-subtitle {
       font-size: 16px;
       color: #666;
@@ -224,6 +232,20 @@
       font-size: 15px;
       color: #888;
       margin-bottom: 32px;
+    }
+
+    .step-subtitle-small {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+
+    .other-allergen-container {
+      margin-top: 12px;
+    }
+
+    .other-allergen-input {
+      font-size: 16px !important;
     }
 
     .text-input {
@@ -706,6 +728,19 @@
       border-bottom: none;
     }
 
+    .summary-row.summary-total {
+      border-top: 2px solid #8B1A1A;
+      margin-top: 8px;
+      padding-top: 16px;
+    }
+
+    .summary-row.summary-total .summary-label,
+    .summary-row.summary-total .summary-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #8B1A1A;
+    }
+
     .summary-label {
       color: #888;
     }
@@ -767,8 +802,9 @@
 
   <!-- Splash Screen -->
   <div class="splash-screen" id="splashScreen">
-    <img src="JapaneseExpresssLogo.png" alt="Japanese Express" class="splash-logo">
-    <h1 class="splash-title">Bento Order Form</h1>
+    <img src="logo.png" alt="Japanese Express" class="splash-logo">
+    <p class="splash-school">Nokiidaa PS</p>
+    <h1 class="splash-title">Sushi Lunch Order</h1>
     <p class="splash-subtitle">Pacific Mall • Second Floor Food Court</p>
     <button class="splash-btn" id="startBtn">Start Order →</button>
   </div>
@@ -783,7 +819,7 @@
   <div id="surveyContainer">
     <header>
       <div class="logo">
-        <img src="JapaneseExpresssLogo.png" alt="Japanese Express" class="logo-icon">
+        <img src="logo.png" alt="Japanese Express" class="logo-icon">
         <span class="logo-text">Japanese Express</span>
       </div>
       <div class="progress-container">
@@ -800,32 +836,28 @@
         <!-- Step 1: Teacher Name -->
         <div class="step active" data-step="0">
           <span class="step-badge">1 →</span>
-          <h2 class="step-title">What is your teacher's name?</h2>
-          <p class="step-subtitle">先生のお名前を入力してください</p>
-          <input type="text" class="text-input" id="teacherName" placeholder="Type teacher's full name..." autofocus>
+          <h2 class="step-title">What is the teacher's name?</h2>
+          <input type="text" class="text-input" id="teacherName" placeholder="Teacher's full name" autofocus>
         </div>
 
         <!-- Step 2: Room Number -->
         <div class="step" data-step="1">
           <span class="step-badge">2 →</span>
           <h2 class="step-title">What is your room number?</h2>
-          <p class="step-subtitle">教室番号を入力してください</p>
-          <input type="text" class="text-input" id="roomNumber" placeholder="e.g., Room 204, Gym, Cafeteria...">
+          <input type="text" class="text-input" id="roomNumber" placeholder="Room number">
         </div>
 
         <!-- Step 3: Student ID -->
         <div class="step" data-step="2">
           <span class="step-badge">3 →</span>
           <h2 class="step-title">Student Last Name or ID</h2>
-          <p class="step-subtitle">生徒の名前またはIDを入力してください</p>
-          <input type="text" class="text-input" id="studentId" placeholder="Enter last name or student ID...">
+          <input type="text" class="text-input" id="studentId" placeholder="Last name or student ID">
         </div>
 
         <!-- Step 4: Menu Selection -->
         <div class="step" data-step="3">
           <span class="step-badge">4 →</span>
           <h2 class="step-title">Choose your item</h2>
-          <p class="step-subtitle">メニューを選んでください</p>
           
           <!-- Category Tabs -->
           <div class="category-tabs" id="categoryTabs">
@@ -841,19 +873,30 @@
         <div class="step" data-step="4">
           <span class="step-badge">5 →</span>
           <h2 class="step-title">Any food allergies?</h2>
-          <p class="step-subtitle">食物アレルギーはありますか？ Select all that apply.</p>
+          <p class="step-subtitle-small">Select all that apply</p>
           <div class="allergen-grid" id="allergenGrid"></div>
+          <div class="other-allergen-container" id="otherAllergenContainer" style="display: none;">
+            <input type="text" class="text-input other-allergen-input" id="otherAllergenInput" placeholder="Please specify other allergies">
+          </div>
           <div class="allergen-warning" id="allergenWarning" style="display: none;">
-            ⚠️ We'll ensure your bento avoids these ingredients
+            ⚠️ We'll ensure your order avoids these ingredients
           </div>
         </div>
 
-        <!-- Step 6: Special Instructions -->
+        <!-- Step 6: Contact Email -->
         <div class="step" data-step="5">
           <span class="step-badge">6 →</span>
+          <h2 class="step-title">Contact Email</h2>
+          <p class="step-subtitle-small">For order confirmation</p>
+          <input type="email" class="text-input" id="contactEmail" placeholder="Email address">
+        </div>
+
+        <!-- Step 7: Special Instructions -->
+        <div class="step" data-step="6">
+          <span class="step-badge">7 →</span>
           <h2 class="step-title">Any special instructions?</h2>
-          <p class="step-subtitle">その他のご要望があればお書きください (Optional)</p>
-          <textarea class="text-area" id="specialInstructions" placeholder="e.g., Extra rice, no spicy, cut in smaller pieces..."></textarea>
+          <p class="step-subtitle-small">Optional</p>
+          <textarea class="text-area" id="specialInstructions" placeholder="Any special requests or notes"></textarea>
           <div class="summary-card" id="orderPreview"></div>
         </div>
 
@@ -874,7 +917,7 @@
   <div class="success-screen" id="successScreen">
     <div class="success-icon">🎉</div>
     <h1 class="success-title">Order Submitted!</h1>
-    <p class="success-text">Thank you for your bento order. Your teacher will receive confirmation shortly.</p>
+    <p class="success-text">Thank you for your lunch order. You will receive a confirmation shortly.</p>
     <div class="order-summary" id="orderSummary"></div>
     <button class="btn btn-restart" id="btnRestart">Place Another Order</button>
   </div>
@@ -899,13 +942,13 @@
           { id: 'kb-egg', name: 'Egg (Tamago)', price: 4.00, category: 'Vegetarian', image: '🥚' },
           { id: 'kb-seaweed', name: 'Seaweed Salad', price: 4.00, category: 'Vegetarian', image: '🥗' },
           { id: 'kb-chicken', name: 'Halal Chicken Teriyaki', price: 4.00, category: 'Halal & Cooked', image: '🍗' },
-          { id: 'kb-salmon-cooked', name: 'Salmon (Cooked) Teriyaki', price: 4.00, category: 'Halal & Cooked', image: '🍣' },
-          { id: 'kb-tuna-salad', name: 'Cooked Tuna Salad with Mayo', price: 4.00, category: 'Halal & Cooked', image: '🐟' },
-          { id: 'kb-crab-salad', name: 'Crab Salad (Imitation Crab)', price: 4.00, category: 'Halal & Cooked', image: '🦀' },
+          { id: 'kb-salmon-cooked', name: 'Salmon (Cooked) Teriyaki', price: 4.00, category: 'Cooked', image: '🍣' },
+          { id: 'kb-tuna-salad', name: 'Cooked Tuna Salad with Mayo', price: 4.00, category: 'Cooked', image: '🐟' },
+          { id: 'kb-crab-salad', name: 'Crab Salad (Imitation Crab)', price: 4.00, category: 'Cooked', image: '🦀' },
           { id: 'kb-beef', name: 'Halal Beef Teriyaki', price: 4.00, category: 'Halal & Cooked', image: '🥩' },
           { id: 'kb-salmon-fresh', name: 'Salmon (Fresh)', price: 4.00, category: 'Fresh Seafood', image: '🍣' },
           { id: 'kb-tuna-fresh', name: 'Tuna (Fresh)', price: 4.00, category: 'Fresh Seafood', image: '🐟' },
-          { id: 'kb-shrimp', name: 'Crispy Shrimp Tempura', price: 4.00, category: 'Fresh Seafood', image: '🍤' }
+          { id: 'kb-shrimp', name: 'Crispy Shrimp Tempura', price: 4.00, category: 'Cooked', image: '🍤' }
         ]
       },
       rolls: {
@@ -919,12 +962,12 @@
           { id: 'rl-egg', name: 'Egg (Tamago) Roll', price: 5.00, category: 'Vegetarian', image: '🥚' },
           { id: 'rl-seaweed', name: 'Seaweed Salad Roll', price: 5.00, category: 'Vegetarian', image: '🥗' },
           { id: 'rl-chicken', name: 'Halal Chicken Teriyaki Roll', price: 6.00, category: 'Halal & Cooked', image: '🍗' },
-          { id: 'rl-california', name: 'California Roll', price: 6.00, category: 'Halal & Cooked', image: '🍣' },
-          { id: 'rl-crab-salad', name: 'Crab Salad Roll (Imitation)', price: 5.50, category: 'Halal & Cooked', image: '🦀' },
+          { id: 'rl-california', name: 'California Roll', price: 6.00, category: 'Cooked', image: '🍣' },
+          { id: 'rl-crab-salad', name: 'Crab Salad Roll (Imitation)', price: 5.50, category: 'Cooked', image: '🦀' },
           { id: 'rl-beef', name: 'Halal Beef Bulgogi Roll', price: 6.00, category: 'Halal & Cooked', image: '🥩' },
           { id: 'rl-salmon-fresh', name: 'Salmon (Fresh) Roll', price: 6.00, category: 'Fresh Seafood', image: '🍣' },
           { id: 'rl-tuna-fresh', name: 'Tuna (Fresh) Roll', price: 6.00, category: 'Fresh Seafood', image: '🐟' },
-          { id: 'rl-shrimp', name: 'Crispy Shrimp Tempura Roll', price: 5.50, category: 'Fresh Seafood', image: '🍤' }
+          { id: 'rl-shrimp', name: 'Crispy Shrimp Tempura Roll', price: 5.50, category: 'Cooked', image: '🍤' }
         ]
       }
     };
@@ -948,12 +991,13 @@
       { id: 'peanuts', name: 'Peanuts', icon: '🥜' },
       { id: 'treenuts', name: 'Tree Nuts', icon: '🌰' },
       { id: 'dairy', name: 'Dairy', icon: '🥛' },
+      { id: 'other', name: 'Other', icon: '📝' },
       { id: 'none', name: 'No Allergies', icon: '✓' }
     ];
 
     // State
     let currentStep = 0;
-    const totalSteps = 6;
+    const totalSteps = 7;
     let selectedCategory = 'kimbap';
     let formData = {
       teacherName: '',
@@ -962,6 +1006,8 @@
       selectedCategory: null,
       selectedItem: null,
       allergens: [],
+      otherAllergen: '',
+      contactEmail: '',
       specialInstructions: ''
     };
 
@@ -1082,9 +1128,15 @@
     function toggleAllergen(id) {
       if (id === 'none') {
         formData.allergens = ['none'];
+        formData.otherAllergen = '';
+        document.getElementById('otherAllergenInput').value = '';
       } else {
         if (formData.allergens.includes(id)) {
           formData.allergens = formData.allergens.filter(a => a !== id);
+          if (id === 'other') {
+            formData.otherAllergen = '';
+            document.getElementById('otherAllergenInput').value = '';
+          }
         } else {
           formData.allergens = [...formData.allergens.filter(a => a !== 'none'), id];
         }
@@ -1104,6 +1156,10 @@
       });
       const warning = document.getElementById('allergenWarning');
       warning.style.display = formData.allergens.length > 0 && !formData.allergens.includes('none') ? 'block' : 'none';
+      
+      // Show/hide other allergen input
+      const otherContainer = document.getElementById('otherAllergenContainer');
+      otherContainer.style.display = formData.allergens.includes('other') ? 'block' : 'none';
     }
 
     function setupEventListeners() {
@@ -1128,6 +1184,13 @@
       document.getElementById('specialInstructions').addEventListener('input', (e) => {
         formData.specialInstructions = e.target.value;
       });
+      document.getElementById('contactEmail').addEventListener('input', (e) => {
+        formData.contactEmail = e.target.value;
+        updateButtons();
+      });
+      document.getElementById('otherAllergenInput').addEventListener('input', (e) => {
+        formData.otherAllergen = e.target.value;
+      });
 
       // Enter key navigation
       document.addEventListener('keydown', (e) => {
@@ -1149,7 +1212,8 @@
         case 2: return formData.studentId.trim().length > 0;
         case 3: return formData.selectedItem !== null;
         case 4: return formData.allergens.length > 0;
-        case 5: return true;
+        case 5: return formData.contactEmail.trim().length > 0 && formData.contactEmail.includes('@');
+        case 6: return true;
         default: return false;
       }
     }
@@ -1181,8 +1245,8 @@
       const input = document.querySelector(`.step[data-step="${step}"] .text-input`);
       if (input) setTimeout(() => input.focus(), 100);
 
-      // Update order preview on last step
-      if (step === 5) {
+      // Update order preview on last step (step 7, index 6)
+      if (step === 6) {
         updateOrderPreview();
       }
     }
@@ -1231,15 +1295,22 @@
       const item = getSelectedItem();
       const categoryName = formData.selectedCategory === 'kimbap' ? 'Samgak Kimbap' : 'Roll';
       
+      // Build allergens string including other if specified
+      let allergensStr = formData.allergens.join(', ');
+      if (formData.allergens.includes('other') && formData.otherAllergen.trim()) {
+        allergensStr = allergensStr.replace('other', `Other: ${formData.otherAllergen}`);
+      }
+      
       const submission = {
         timestamp: new Date().toISOString(),
         teacherName: formData.teacherName,
         roomNumber: formData.roomNumber,
         studentId: formData.studentId,
+        contactEmail: formData.contactEmail,
         category: categoryName,
         itemName: item?.name || '',
         itemPrice: item?.price || 0,
-        allergens: formData.allergens.join(', '),
+        allergens: allergensStr,
         specialInstructions: formData.specialInstructions
       };
 
@@ -1279,15 +1350,15 @@
           <span class="summary-value">${data.studentId}</span>
         </div>
         <div class="summary-row">
-          <span class="summary-label">Category</span>
-          <span class="summary-value">${data.category}</span>
+          <span class="summary-label">Email</span>
+          <span class="summary-value">${data.contactEmail}</span>
         </div>
         <div class="summary-row">
           <span class="summary-label">Item</span>
           <span class="summary-value">${data.itemName}</span>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">Price</span>
+        <div class="summary-row summary-total">
+          <span class="summary-label">Total</span>
           <span class="summary-value">$${data.itemPrice.toFixed(2)}</span>
         </div>
       `;
@@ -1303,6 +1374,8 @@
         selectedCategory: null,
         selectedItem: null,
         allergens: [],
+        otherAllergen: '',
+        contactEmail: '',
         specialInstructions: ''
       };
 
@@ -1310,7 +1383,9 @@
       document.getElementById('teacherName').value = '';
       document.getElementById('roomNumber').value = '';
       document.getElementById('studentId').value = '';
+      document.getElementById('contactEmail').value = '';
       document.getElementById('specialInstructions').value = '';
+      document.getElementById('otherAllergenInput').value = '';
 
       // Reset category tabs
       document.querySelectorAll('.category-tab').forEach(tab => {
@@ -1328,6 +1403,7 @@
         card.querySelector('.allergen-check')?.remove();
       });
       document.getElementById('allergenWarning').style.display = 'none';
+      document.getElementById('otherAllergenContainer').style.display = 'none';
 
       // Show splash screen
       document.getElementById('splashScreen').classList.remove('hidden');
