@@ -12,6 +12,13 @@
       box-sizing: border-box;
     }
 
+    html, body {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: #8B1A1A;
+    }
+
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       min-height: 100vh;
@@ -21,7 +28,7 @@
     }
 
     .bg-decor {
-      position: fixed;
+      position: absolute;
       inset: 0;
       pointer-events: none;
       background: 
@@ -38,6 +45,82 @@
       z-index: 10;
     }
 
+    /* Splash Screen */
+    .splash-screen {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      background: linear-gradient(135deg, #fffbf5 0%, #fff5eb 50%, #fff0e6 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .splash-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .splash-logo {
+      width: 250px;
+      height: 250px;
+      object-fit: contain;
+      margin-bottom: 20px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @media (min-width: 400px) {
+      .splash-logo {
+        width: 300px;
+        height: 300px;
+      }
+    }
+
+    .splash-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #8B1A1A;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .splash-subtitle {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .splash-btn {
+      background: linear-gradient(135deg, #8B1A1A, #C41E3A);
+      color: white;
+      border: none;
+      padding: 18px 48px;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(139, 26, 26, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .splash-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(139, 26, 26, 0.4);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
     .logo {
       display: flex;
       align-items: center;
@@ -46,7 +129,8 @@
 
     .logo-icon {
       height: 40px;
-      width: auto;
+      width: 40px;
+      object-fit: contain;
     }
 
     .logo-text {
@@ -129,7 +213,7 @@
     }
 
     .step-title {
-      font-size: 32px;
+      font-size: 24px;
       font-weight: 600;
       color: #1a1a1a;
       margin-bottom: 8px;
@@ -144,7 +228,7 @@
 
     .text-input {
       width: 100%;
-      font-size: 24px;
+      font-size: 18px;
       padding: 16px 0;
       border: none;
       border-bottom: 2px solid #e0e0e0;
@@ -165,11 +249,124 @@
     /* Bento Grid */
     .bento-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: 1fr;
       gap: 14px;
       max-height: 380px;
       overflow-y: auto;
       padding: 4px;
+    }
+
+    /* Category Tabs */
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .category-tab {
+      flex: 1;
+      padding: 12px 8px;
+      border: 2px solid #e0e0e0;
+      background: white;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #666;
+    }
+
+    .category-tab.active {
+      border-color: #8B1A1A;
+      background: rgba(139, 26, 26, 0.08);
+      color: #8B1A1A;
+    }
+
+    .category-desc {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    /* Menu Grid */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .menu-card {
+      background: rgba(255,255,255,0.9);
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: all 0.2s ease;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .menu-card.selected {
+      border-color: #8B1A1A;
+      background: rgba(139, 26, 26, 0.08);
+    }
+
+    .menu-emoji {
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .menu-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .menu-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 2px;
+    }
+
+    .menu-category {
+      font-size: 11px;
+      color: #888;
+    }
+
+    .menu-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: #8B1A1A;
+      flex-shrink: 0;
+    }
+
+    .menu-check {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #8B1A1A, #C41E3A);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
     }
 
     .bento-card {
@@ -277,7 +474,7 @@
     /* Allergen Grid */
     .allergen-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
     }
 
@@ -462,12 +659,12 @@
     }
 
     .success-icon {
-      font-size: 72px;
+      font-size: 56px;
       margin-bottom: 24px;
     }
 
     .success-title {
-      font-size: 36px;
+      font-size: 28px;
       font-weight: 700;
       color: #1a1a1a;
       margin-bottom: 12px;
@@ -527,7 +724,12 @@
     .loading-overlay {
       display: none;
       position: fixed;
-      inset: 0;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
       background: rgba(255,255,255,0.9);
       z-index: 100;
       justify-content: center;
@@ -558,25 +760,18 @@
       color: #666;
     }
 
-    /* Responsive */
-    @media (max-width: 600px) {
-      .step-title {
-        font-size: 24px;
-      }
-      .text-input {
-        font-size: 18px;
-      }
-      .bento-grid {
-        grid-template-columns: 1fr;
-      }
-      .allergen-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
   </style>
 </head>
 <body>
   <div class="bg-decor"></div>
+
+  <!-- Splash Screen -->
+  <div class="splash-screen" id="splashScreen">
+    <img src="logo.png" alt="Japanese Express" class="splash-logo">
+    <h1 class="splash-title">Bento Order Form</h1>
+    <p class="splash-subtitle">Pacific Mall • Second Floor Food Court</p>
+    <button class="splash-btn" id="startBtn">Start Order →</button>
+  </div>
 
   <!-- Loading Overlay -->
   <div class="loading-overlay" id="loadingOverlay">
@@ -626,12 +821,20 @@
           <input type="text" class="text-input" id="studentId" placeholder="Enter last name or student ID...">
         </div>
 
-        <!-- Step 4: Bento Selection -->
+        <!-- Step 4: Menu Selection -->
         <div class="step" data-step="3">
           <span class="step-badge">4 →</span>
-          <h2 class="step-title">Choose your bento box</h2>
-          <p class="step-subtitle">お弁当を選んでください</p>
-          <div class="bento-grid" id="bentoGrid"></div>
+          <h2 class="step-title">Choose your item</h2>
+          <p class="step-subtitle">メニューを選んでください</p>
+          
+          <!-- Category Tabs -->
+          <div class="category-tabs" id="categoryTabs">
+            <button class="category-tab active" data-category="kimbap">🍙 Samgak Kimbap</button>
+            <button class="category-tab" data-category="rolls">🍣 Rolls</button>
+          </div>
+          <p class="category-desc" id="categoryDesc">Korean marinated rice with your choice of filling (1 piece)</p>
+          
+          <div class="menu-grid" id="menuGrid"></div>
         </div>
 
         <!-- Step 5: Allergens -->
@@ -684,6 +887,48 @@
     // ============================================
 
     // Data
+    const menuCategories = {
+      kimbap: {
+        name: 'Samgak Kimbap',
+        description: 'Korean marinated rice with your choice of filling (1 piece)',
+        items: [
+          { id: 'kb-avocado-cucumber', name: 'Avocado & Cucumber', price: 4.00, category: 'Vegetarian', image: '🥑' },
+          { id: 'kb-cucumber', name: 'Cucumber', price: 4.00, category: 'Vegetarian', image: '🥒' },
+          { id: 'kb-mango', name: 'Mango', price: 4.00, category: 'Vegetarian', image: '🥭' },
+          { id: 'kb-yam-tempura', name: 'Yam Tempura', price: 4.00, category: 'Vegetarian', image: '🍠' },
+          { id: 'kb-egg', name: 'Egg (Tamago)', price: 4.00, category: 'Vegetarian', image: '🥚' },
+          { id: 'kb-seaweed', name: 'Seaweed Salad', price: 4.00, category: 'Vegetarian', image: '🥗' },
+          { id: 'kb-chicken', name: 'Halal Chicken Teriyaki', price: 4.00, category: 'Halal & Cooked', image: '🍗' },
+          { id: 'kb-salmon-cooked', name: 'Salmon (Cooked) Teriyaki', price: 4.00, category: 'Halal & Cooked', image: '🍣' },
+          { id: 'kb-tuna-salad', name: 'Cooked Tuna Salad with Mayo', price: 4.00, category: 'Halal & Cooked', image: '🐟' },
+          { id: 'kb-crab-salad', name: 'Crab Salad (Imitation Crab)', price: 4.00, category: 'Halal & Cooked', image: '🦀' },
+          { id: 'kb-beef', name: 'Halal Beef Teriyaki', price: 4.00, category: 'Halal & Cooked', image: '🥩' },
+          { id: 'kb-salmon-fresh', name: 'Salmon (Fresh)', price: 4.00, category: 'Fresh Seafood', image: '🍣' },
+          { id: 'kb-tuna-fresh', name: 'Tuna (Fresh)', price: 4.00, category: 'Fresh Seafood', image: '🐟' },
+          { id: 'kb-shrimp', name: 'Crispy Shrimp Tempura', price: 4.00, category: 'Fresh Seafood', image: '🍤' }
+        ]
+      },
+      rolls: {
+        name: 'Rolls',
+        description: '8 pieces with white sushi rice on the outside',
+        items: [
+          { id: 'rl-avocado-cucumber', name: 'Avocado & Cucumber Roll', price: 5.50, category: 'Vegetarian', image: '🥑' },
+          { id: 'rl-cucumber', name: 'Cucumber Roll', price: 5.00, category: 'Vegetarian', image: '🥒' },
+          { id: 'rl-mango', name: 'Mango Roll', price: 5.00, category: 'Vegetarian', image: '🥭' },
+          { id: 'rl-yam-tempura', name: 'Yam Tempura Roll', price: 5.50, category: 'Vegetarian', image: '🍠' },
+          { id: 'rl-egg', name: 'Egg (Tamago) Roll', price: 5.00, category: 'Vegetarian', image: '🥚' },
+          { id: 'rl-seaweed', name: 'Seaweed Salad Roll', price: 5.00, category: 'Vegetarian', image: '🥗' },
+          { id: 'rl-chicken', name: 'Halal Chicken Teriyaki Roll', price: 6.00, category: 'Halal & Cooked', image: '🍗' },
+          { id: 'rl-california', name: 'California Roll', price: 6.00, category: 'Halal & Cooked', image: '🍣' },
+          { id: 'rl-crab-salad', name: 'Crab Salad Roll (Imitation)', price: 5.50, category: 'Halal & Cooked', image: '🦀' },
+          { id: 'rl-beef', name: 'Halal Beef Bulgogi Roll', price: 6.00, category: 'Halal & Cooked', image: '🥩' },
+          { id: 'rl-salmon-fresh', name: 'Salmon (Fresh) Roll', price: 6.00, category: 'Fresh Seafood', image: '🍣' },
+          { id: 'rl-tuna-fresh', name: 'Tuna (Fresh) Roll', price: 6.00, category: 'Fresh Seafood', image: '🐟' },
+          { id: 'rl-shrimp', name: 'Crispy Shrimp Tempura Roll', price: 5.50, category: 'Fresh Seafood', image: '🍤' }
+        ]
+      }
+    };
+
     const bentoMenus = [
       { id: 'teriyaki', name: 'Teriyaki Chicken Bento', nameJp: '照り焼きチキン弁当', price: 12.99, description: 'Grilled chicken with sweet teriyaki glaze, steamed rice, edamame, and pickled vegetables', image: '🍗', popular: true, allergens: ['soy', 'sesame', 'wheat'] },
       { id: 'salmon', name: 'Grilled Salmon Bento', nameJp: '焼き鮭弁当', price: 14.99, description: 'Norwegian salmon fillet with miso glaze, jasmine rice, seaweed salad, and tamagoyaki', image: '🍣', popular: true, allergens: ['fish', 'soy', 'egg', 'sesame'] },
@@ -709,11 +954,13 @@
     // State
     let currentStep = 0;
     const totalSteps = 6;
+    let selectedCategory = 'kimbap';
     let formData = {
       teacherName: '',
       roomNumber: '',
       studentId: '',
-      selectedBento: null,
+      selectedCategory: null,
+      selectedItem: null,
       allergens: [],
       specialInstructions: ''
     };
@@ -729,35 +976,81 @@
     const successScreen = document.getElementById('successScreen');
     const loadingOverlay = document.getElementById('loadingOverlay');
 
+    // Splash screen
+    document.getElementById('startBtn').addEventListener('click', () => {
+      document.getElementById('splashScreen').classList.add('hidden');
+      setTimeout(() => {
+        document.getElementById('teacherName').focus();
+      }, 500);
+    });
+
     // Initialize
     function init() {
-      renderBentoGrid();
+      renderMenuGrid();
+      setupCategoryTabs();
       renderAllergenGrid();
       updateProgress();
       setupEventListeners();
     }
 
-    function renderBentoGrid() {
-      const grid = document.getElementById('bentoGrid');
-      grid.innerHTML = bentoMenus.map(bento => `
-        <div class="bento-card" data-id="${bento.id}">
-          ${bento.popular ? '<span class="popular-badge">Popular</span>' : ''}
-          <div class="bento-emoji">${bento.image}</div>
-          <div class="bento-name">${bento.name}</div>
-          <div class="bento-name-jp">${bento.nameJp}</div>
-          <div class="bento-desc">${bento.description}</div>
-          <div class="bento-footer">
-            <span class="bento-price">$${bento.price.toFixed(2)}</span>
-            <div class="bento-allergens">
-              ${bento.allergens.slice(0, 2).map(a => `<span class="allergen-mini-tag">${a}</span>`).join('')}
-            </div>
+    function setupCategoryTabs() {
+      document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          selectedCategory = tab.dataset.category;
+          document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById('categoryDesc').textContent = menuCategories[selectedCategory].description;
+          formData.selectedItem = null;
+          formData.selectedCategory = null;
+          renderMenuGrid();
+          updateButtons();
+        });
+      });
+    }
+
+    function renderMenuGrid() {
+      const grid = document.getElementById('menuGrid');
+      const items = menuCategories[selectedCategory].items;
+      
+      grid.innerHTML = items.map(item => `
+        <div class="menu-card" data-id="${item.id}" data-category="${selectedCategory}">
+          <span class="menu-emoji">${item.image}</span>
+          <div class="menu-info">
+            <div class="menu-name">${item.name}</div>
+            <div class="menu-category">${item.category}</div>
           </div>
+          <span class="menu-price">$${item.price.toFixed(2)}</span>
         </div>
       `).join('');
 
-      grid.querySelectorAll('.bento-card').forEach(card => {
-        card.addEventListener('click', () => selectBento(card.dataset.id));
+      grid.querySelectorAll('.menu-card').forEach(card => {
+        card.addEventListener('click', () => selectMenuItem(card.dataset.id, card.dataset.category));
       });
+    }
+
+    function selectMenuItem(itemId, category) {
+      formData.selectedItem = itemId;
+      formData.selectedCategory = category;
+      
+      document.querySelectorAll('.menu-card').forEach(card => {
+        card.classList.remove('selected');
+        card.querySelector('.menu-check')?.remove();
+      });
+      
+      const selected = document.querySelector(`.menu-card[data-id="${itemId}"]`);
+      selected.classList.add('selected');
+      selected.innerHTML += '<div class="menu-check">✓</div>';
+      updateButtons();
+    }
+
+    function getSelectedItem() {
+      if (!formData.selectedItem || !formData.selectedCategory) return null;
+      return menuCategories[formData.selectedCategory].items.find(item => item.id === formData.selectedItem);
+    }
+
+    function renderBentoGrid() {
+      const grid = document.getElementById('bentoGrid');
+      if (!grid) return;
     }
 
     function renderAllergenGrid() {
@@ -854,7 +1147,7 @@
         case 0: return formData.teacherName.trim().length > 0;
         case 1: return formData.roomNumber.trim().length > 0;
         case 2: return formData.studentId.trim().length > 0;
-        case 3: return formData.selectedBento !== null;
+        case 3: return formData.selectedItem !== null;
         case 4: return formData.allergens.length > 0;
         case 5: return true;
         default: return false;
@@ -895,12 +1188,13 @@
     }
 
     function updateOrderPreview() {
-      const bento = bentoMenus.find(b => b.id === formData.selectedBento);
+      const item = getSelectedItem();
+      const categoryName = formData.selectedCategory === 'kimbap' ? 'Samgak Kimbap' : 'Roll';
       document.getElementById('orderPreview').innerHTML = `
-        <span class="summary-emoji">${bento?.image || '🍱'}</span>
+        <span class="summary-emoji">${item?.image || '🍙'}</span>
         <div>
-          <div class="summary-name">${bento?.name || 'No bento selected'}</div>
-          <div class="summary-meta">For ${formData.studentId} • Room ${formData.roomNumber}</div>
+          <div class="summary-name">${item?.name || 'No item selected'}</div>
+          <div class="summary-meta">${categoryName} • For ${formData.studentId} • Room ${formData.roomNumber}</div>
         </div>
       `;
     }
@@ -934,14 +1228,17 @@
     async function submitForm() {
       loadingOverlay.classList.add('active');
 
-      const bento = bentoMenus.find(b => b.id === formData.selectedBento);
+      const item = getSelectedItem();
+      const categoryName = formData.selectedCategory === 'kimbap' ? 'Samgak Kimbap' : 'Roll';
+      
       const submission = {
         timestamp: new Date().toISOString(),
         teacherName: formData.teacherName,
         roomNumber: formData.roomNumber,
         studentId: formData.studentId,
-        bentoName: bento?.name || '',
-        bentoPrice: bento?.price || 0,
+        category: categoryName,
+        itemName: item?.name || '',
+        itemPrice: item?.price || 0,
         allergens: formData.allergens.join(', '),
         specialInstructions: formData.specialInstructions
       };
@@ -982,23 +1279,29 @@
           <span class="summary-value">${data.studentId}</span>
         </div>
         <div class="summary-row">
-          <span class="summary-label">Bento</span>
-          <span class="summary-value">${data.bentoName}</span>
+          <span class="summary-label">Category</span>
+          <span class="summary-value">${data.category}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Item</span>
+          <span class="summary-value">${data.itemName}</span>
         </div>
         <div class="summary-row">
           <span class="summary-label">Price</span>
-          <span class="summary-value">$${data.bentoPrice.toFixed(2)}</span>
+          <span class="summary-value">$${data.itemPrice.toFixed(2)}</span>
         </div>
       `;
     }
 
     function restart() {
       currentStep = 0;
+      selectedCategory = 'kimbap';
       formData = {
         teacherName: '',
         roomNumber: '',
         studentId: '',
-        selectedBento: null,
+        selectedCategory: null,
+        selectedItem: null,
         allergens: [],
         specialInstructions: ''
       };
@@ -1009,11 +1312,15 @@
       document.getElementById('studentId').value = '';
       document.getElementById('specialInstructions').value = '';
 
-      // Reset bento selection
-      document.querySelectorAll('.bento-card').forEach(card => {
-        card.classList.remove('selected');
-        card.querySelector('.checkmark')?.remove();
+      // Reset category tabs
+      document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.category === 'kimbap') tab.classList.add('active');
       });
+      document.getElementById('categoryDesc').textContent = menuCategories.kimbap.description;
+
+      // Reset menu selection
+      renderMenuGrid();
 
       // Reset allergens
       document.querySelectorAll('.allergen-card').forEach(card => {
@@ -1022,7 +1329,10 @@
       });
       document.getElementById('allergenWarning').style.display = 'none';
 
-      // Show survey
+      // Show splash screen
+      document.getElementById('splashScreen').classList.remove('hidden');
+      
+      // Hide success, show survey
       successScreen.classList.remove('active');
       surveyContainer.style.display = 'block';
       showStep(0);
